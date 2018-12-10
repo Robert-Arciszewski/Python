@@ -6,6 +6,7 @@ import subprocess
 from subprocess import PIPE, run
 import pings
 import socket
+import os
 
 socket.setdefaulttimeout(0.5)
 
@@ -13,7 +14,6 @@ def main():
     print ("\n\n")
     print("_______________ PyCamScanner v1.0.20181210 _______________")
     #print(str("____________________ ")+str(datetime.now().strftime('%m-%d-%y'))+" _______________")
-    print("\n")
     menu()
 
 
@@ -31,7 +31,8 @@ def menu():
         print("___________________________________________________________")
         print("\n Menu ->  Dahua")
         choice = input("""
-                    1: Kompletny raport
+                    0: Kompletny raport - podgląd
+                    1: Kompletny raport + zapis do plików
                     2: Chmura
                     3: Adresy IP
                     4: Kodowanie H.264/H.265
@@ -43,8 +44,10 @@ def menu():
                     0: Wyjście
 
                     Wybieram: """)
-        if choice == '1':
+        if choice == '0':
             dahua_new()
+        if choice == '1':
+            dahua_new_files()
         elif choice == '2':
             dahua_nvr_new_cloud()
         elif choice == '3':
@@ -92,8 +95,59 @@ def menu():
         print("Podana została nieobsługiwana wartość")
         menu()
 
-
 def dahua_new():
+    while True:
+        try:
+            a = int(input("Podsieć: 192.168."))
+            x = int(input("Zakres hostów od: 192.168." + str(a) + "."))
+            y = int(input("Zakres hostów do: 192.168." + str(a) + ".")) + 1
+        except ValueError:
+            print('Wprowadzona została niepoprawna wartość.')
+            continue
+        login_text = ("Podaj login: ")
+        passw_text = ("Podaj hasło: ")
+        login = input(login_text)
+        passw = input(passw_text)
+        http = "http://"
+        ip_uniview = "192.168." + str(a) + "."
+        uniview_url = "/cgi-bin/magicBox.cgi?action=getSystemInfo"
+        cloud_rest = "/cgi-bin/configManager.cgi?action=getConfig&name=T2UServer"
+        confignetwork_rest = "/cgi-bin/configManager.cgi?action=getConfig&name=Network"
+        configencode_rest = "/cgi-bin/configManager.cgi?action=getConfig&name=Encode"
+        currenttime_rest = "/cgi-bin/global.cgi?action=getCurrentTime"
+        softwareversion_rest = "/cgi-bin/magicBox.cgi?action=getSoftwareVersion"
+        channeltitle_rest = "/cgi-bin/configManager.cgi?action=getConfig&name=ChannelTitle"
+        p = pings.Ping()
+        for i in range(x, y):
+            ip_rest = str(i)
+            ping_ip = str(ip_uniview + ip_rest)
+            response = p.ping(ping_ip)
+            print(ping_ip)
+            if (response.is_reached()):
+                systeminfo = requests.get(http + ip_uniview + str(ip_rest) + uniview_url, auth=HTTPDigestAuth(login, passw))
+                cloud = requests.get(http + ip_uniview + str(ip_rest) + cloud_rest, auth=HTTPDigestAuth(login, passw))
+                confignetwork = requests.get(http + ip_uniview + str(ip_rest) + confignetwork_rest, auth=HTTPDigestAuth(login, passw))
+                configencode = requests.get(http + ip_uniview + str(ip_rest) + configencode_rest, auth=HTTPDigestAuth(login, passw))
+                currenttime = requests.get(http + ip_uniview + str(ip_rest) + currenttime_rest,auth=HTTPDigestAuth(login, passw))
+                softwareversion = requests.get(http + ip_uniview + str(ip_rest) +softwareversion_rest,auth=HTTPDigestAuth(login, passw))
+                channeltitle = requests.get(http + ip_uniview + str(ip_rest) + channeltitle_rest,auth=HTTPDigestAuth(login, passw))
+                print("Informacje dla: "+ ping_ip +"\n")
+                print("Informacje systemowe: \n"+ systeminfo.text)
+                print("Czas: \n" + currenttime.text)
+                print("Wersja oprogramowania: \n" + softwareversion.text)
+                print("Chmura: \n"+ cloud.text)
+                print("Konfiguracja sieci: \n" + confignetwork.text)
+                print("Kodowanie: \n" + configencode.text)
+                print("Kanały: \n" + channeltitle.text)
+                #print(confignetwork.url)
+                #print(confignetwork.status_code)
+            else:
+                print("OFFLINE\n")
+
+        break
+
+
+def dahua_new_files():
     while True:
         try:
             a = int(input("Podsieć: 192.168."))
@@ -133,18 +187,25 @@ def dahua_new():
                 channeltitle = requests.get(http + ip_uniview + str(ip_rest) + channeltitle_rest,auth=HTTPDigestAuth(login, passw))
                 #c = requests.get("192.168.135.50", auth=HTTPDigestAuth(login, passw))
                 #file = open('Dahua.txt', 'w')
-                #file.write(
-                print("Informacje systemowe: \n"+ systeminfo.text)
-                print("Czas: \n" + currenttime.text)
-                print("Wersja oprogramowania: \n" + softwareversion.text)
-                print("Chmura: \n"+ cloud.text)
-                print("Konfiguracja sieci: \n" + confignetwork.text)
-                print("Kodowanie: \n" + configencode.text)
-                print("Kanały: \n" + channeltitle.text)
-                print(confignetwork.url)
-                print(confignetwork.status_code)
+                #
+                filepath = "Raport/"+ping_ip+".txt"
+                os.makedirs(os.path.dirname(filepath), exist_ok=True)
+                with open(filepath, 'w', encoding='utf-8') as f:
+                    print("Informacje dla: "+ ping_ip +"\n", file=f)
+                    print("Informacje systemowe: \n"+ systeminfo.text, file=f)
+                    print("Czas: \n" + currenttime.text, file=f)
+                    print("Wersja oprogramowania: \n" + softwareversion.text, file=f)
+                    print("Chmura: \n"+ cloud.text, file=f)
+                    print("Konfiguracja sieci: \n" + confignetwork.text, file=f)
+                    print("Kodowanie: \n" + configencode.text, file=f)
+                    print("Kanały: \n" + channeltitle.text, file=f)
+                    #print(confignetwork.url)
+                    #print(confignetwork.status_code)
             else:
-                print("OFFLINE\n")
+                filepathoffline = "Raport/OFFLINE_"+ping_ip+".txt"
+                os.makedirs(os.path.dirname(filepathoffline), exist_ok=True)
+                with open(filepathoffline, 'w', encoding='utf-8') as o:
+                    print("OFFLINE\n", file=o)
                 #)
                 #file.close()
         break

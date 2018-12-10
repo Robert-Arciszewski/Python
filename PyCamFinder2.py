@@ -225,237 +225,273 @@ def dahua_nvr_new_ip():
 
 
 def dahua_nvr_new_encode():
-    a = input("Podsieć: 192.168.")
-    x = int(input("Zakres hostów od: 192.168." + a + "."))
-    y = int(input("Zakres hostów do: 192.168." + a + ".")) + 1
-    login_text = ("Podaj login: ")
-    passw_text = ("Podaj hasło: ")
-    login = input(login_text)
-    passw = input(passw_text)
-    http = "http://"
-    ip_uniview = "192.168." + a + "."
-    configencode_rest = "/cgi-bin/configManager.cgi?action=getConfig&name=Encode"
-    p = pings.Ping()
-    for i in range(x, y):
-        ip_rest = str(i)
-        ping_ip = str(ip_uniview + ip_rest)
-        response = p.ping(ping_ip)
-        print(ping_ip)
-        if (response.is_reached()):
-            configencode = requests.get(http + ip_uniview + str(ip_rest) + configencode_rest,auth=HTTPDigestAuth(login, passw))
-            if configencode.text != "":
-                print(configencode.text)
-            else:
-                configencode = requests.get(http + ip_uniview + str(ip_rest) + configencode_rest, auth=(login, passw))
-                print(configencode.text)
-                #print(configencode.status_code)
-                if (configencode.status_code == 401):
-                    print("Zły login lub hasło lub konto zablokowane. "+ str(configencode.status_code))
+    while True:
+        try:
+            a = int(input("Podsieć: 192.168."))
+            x = int(input("Zakres hostów od: 192.168." + str(a) + "."))
+            y = int(input("Zakres hostów do: 192.168." + str(a) + ".")) + 1
+        except ValueError:
+            print('Wprowadzona została niepoprawna wartość.')
+            continue
+        login_text = ("Podaj login: ")
+        passw_text = ("Podaj hasło: ")
+        login = input(login_text)
+        passw = input(passw_text)
+        http = "http://"
+        ip_uniview = "192.168." + str(a) + "."
+        configencode_rest = "/cgi-bin/configManager.cgi?action=getConfig&name=Encode"
+        p = pings.Ping()
+        for i in range(x, y):
+            ip_rest = str(i)
+            ping_ip = str(ip_uniview + ip_rest)
+            response = p.ping(ping_ip)
+            print(ping_ip)
+            if (response.is_reached()):
+                configencode = requests.get(http + ip_uniview + str(ip_rest) + configencode_rest,auth=HTTPDigestAuth(login, passw))
+                if configencode.text != "":
+                    print(configencode.text)
                 else:
+                    configencode = requests.get(http + ip_uniview + str(ip_rest) + configencode_rest, auth=(login, passw))
                     print(configencode.text)
                     #print(configencode.status_code)
-        else:
-            print("OFFLINE\n")
+                    if (configencode.status_code == 401):
+                        print("Zły login lub hasło lub konto zablokowane. "+ str(configencode.status_code))
+                    else:
+                        print(configencode.text)
+                        #print(configencode.status_code)
+            else:
+                print("OFFLINE\n")
+        break
 
 
 
 def dahua_nvr_new_time():
-    a = input("Podsieć: 192.168.")
-    x = int(input("Zakres hostów od: 192.168." + a + "."))
-    y = int(input("Zakres hostów do: 192.168." + a + ".")) + 1
-    login_text = ("Podaj login: ")
-    passw_text = ("Podaj hasło: ")
-    login = input(login_text)
-    passw = input(passw_text)
-    http = "http://"
-    ip_uniview = "192.168." + a + "."
-    currenttime_rest = "/cgi-bin/global.cgi?action=getCurrentTime"
-    p = pings.Ping()
-    for i in range(x, y):
-        ip_rest = str(i)
-        ping_ip = str(ip_uniview + ip_rest)
-        response = p.ping(ping_ip)
-        print(ping_ip)
-        if (response.is_reached()):
-            currenttime = requests.get(http + ip_uniview + str(ip_rest) + currenttime_rest,auth=HTTPDigestAuth(login, passw))
-            if currenttime.text != "":
-                print(currenttime.text)
-            else:
-                currenttime = requests.get(http + ip_uniview + str(ip_rest) + currenttime_rest, auth=(login, passw))
-                #print(currenttime.text)
-                #print(currenttime.status_code)
-                if (currenttime.status_code == 401):
-                    print("Zły login lub hasło lub konto zablokowane. "+ str(currenttime.status_code))
-                else:
+    while True:
+        try:
+            a = int(input("Podsieć: 192.168."))
+            x = int(input("Zakres hostów od: 192.168." + str(a) + "."))
+            y = int(input("Zakres hostów do: 192.168." + str(a) + ".")) + 1
+        except ValueError:
+            print('Wprowadzona została niepoprawna wartość.')
+            continue
+        login_text = ("Podaj login: ")
+        passw_text = ("Podaj hasło: ")
+        login = input(login_text)
+        passw = input(passw_text)
+        http = "http://"
+        ip_uniview = "192.168." + str(a) + "."
+        currenttime_rest = "/cgi-bin/global.cgi?action=getCurrentTime"
+        p = pings.Ping()
+        for i in range(x, y):
+            ip_rest = str(i)
+            ping_ip = str(ip_uniview + ip_rest)
+            response = p.ping(ping_ip)
+            print(ping_ip)
+            if (response.is_reached()):
+                currenttime = requests.get(http + ip_uniview + str(ip_rest) + currenttime_rest,auth=HTTPDigestAuth(login, passw))
+                if currenttime.text != "":
                     print(currenttime.text)
+                else:
+                    currenttime = requests.get(http + ip_uniview + str(ip_rest) + currenttime_rest, auth=(login, passw))
+                    #print(currenttime.text)
                     #print(currenttime.status_code)
-        else:
-            print("OFFLINE\n")
+                    if (currenttime.status_code == 401):
+                        print("Zły login lub hasło lub konto zablokowane. "+ str(currenttime.status_code))
+                    else:
+                        print(currenttime.text)
+                        #print(currenttime.status_code)
+            else:
+                print("OFFLINE\n")
+        break
 
 
 
 def dahua_nvr_new_software():
-    a = input("Podsieć: 192.168.")
-    x = int(input("Zakres hostów od: 192.168." + a + "."))
-    y = int(input("Zakres hostów do: 192.168." + a + ".")) + 1
-    login_text = ("Podaj login: ")
-    passw_text = ("Podaj hasło: ")
-    login = input(login_text)
-    passw = input(passw_text)
-    http = "http://"
-    ip_uniview = "192.168." + a + "."
-    softwareversion_rest = "/cgi-bin/magicBox.cgi?action=getSoftwareVersion"
-    p = pings.Ping()
-    for i in range(x, y):
-        ip_rest = str(i)
-        ping_ip = str(ip_uniview + ip_rest)
-        response = p.ping(ping_ip)
-        print(ping_ip)
-        if (response.is_reached()):
-            softwareversion = requests.get(http + ip_uniview + str(ip_rest) + softwareversion_rest,auth=HTTPDigestAuth(login, passw))
-            if softwareversion.text != "":
-                print(softwareversion.text)
-            else:
-                softwareversion = requests.get(http + ip_uniview + str(ip_rest) + softwareversion_rest, auth=(login, passw))
-                #print(softwareversion.text)
-                #print(softwareversion.status_code)
-                if (softwareversion.status_code == 401):
-                    print("Zły login lub hasło lub konto zablokowane. "+ str(softwareversion.status_code))
-                else:
+    while True:
+        try:
+            a = int(input("Podsieć: 192.168."))
+            x = int(input("Zakres hostów od: 192.168." + str(a) + "."))
+            y = int(input("Zakres hostów do: 192.168." + str(a) + ".")) + 1
+        except ValueError:
+            print('Wprowadzona została niepoprawna wartość.')
+            continue
+        login_text = ("Podaj login: ")
+        passw_text = ("Podaj hasło: ")
+        login = input(login_text)
+        passw = input(passw_text)
+        http = "http://"
+        ip_uniview = "192.168." + str(a) + "."
+        login_text = ("Podaj login: ")
+        passw_text = ("Podaj hasło: ")
+        login = input(login_text)
+        passw = input(passw_text)
+        http = "http://"
+        ip_uniview = "192.168." + a + "."
+        softwareversion_rest = "/cgi-bin/magicBox.cgi?action=getSoftwareVersion"
+        p = pings.Ping()
+        for i in range(x, y):
+            ip_rest = str(i)
+            ping_ip = str(ip_uniview + ip_rest)
+            response = p.ping(ping_ip)
+            print(ping_ip)
+            if (response.is_reached()):
+                softwareversion = requests.get(http + ip_uniview + str(ip_rest) + softwareversion_rest,auth=HTTPDigestAuth(login, passw))
+                if softwareversion.text != "":
                     print(softwareversion.text)
+                else:
+                    softwareversion = requests.get(http + ip_uniview + str(ip_rest) + softwareversion_rest, auth=(login, passw))
+                    #print(softwareversion.text)
                     #print(softwareversion.status_code)
-        else:
-            print("OFFLINE\n")
+                    if (softwareversion.status_code == 401):
+                        print("Zły login lub hasło lub konto zablokowane. "+ str(softwareversion.status_code))
+                    else:
+                        print(softwareversion.text)
+                        #print(softwareversion.status_code)
+            else:
+                print("OFFLINE\n")
+        break
 
 
 def dahua_nvr_new_channelname():
-    a = input("Podsieć: 192.168.")
-    x = int(input("Zakres hostów od: 192.168." + a + "."))
-    y = int(input("Zakres hostów do: 192.168." + a + ".")) + 1
-    login_text = ("Podaj login: ")
-    passw_text = ("Podaj hasło: ")
-    login = input(login_text)
-    passw = input(passw_text)
-    http = "http://"
-    ip_uniview = "192.168." + a + "."
-    channeltitle_rest = "/cgi-bin/configManager.cgi?action=getConfig&name=ChannelTitle"
-    p = pings.Ping()
-    for i in range(x, y):
-        ip_rest = str(i)
-        ping_ip = str(ip_uniview + ip_rest)
-        response = p.ping(ping_ip)
-        print(ping_ip)
-        if (response.is_reached()):
-            channeltitle = requests.get(http + ip_uniview + str(ip_rest) + channeltitle_rest, auth=HTTPDigestAuth(login, passw), verify=False, timeout=10)
-            if channeltitle.text != "":
-                print(channeltitle.text)
+    while True:
+        try:
+            a = int(input("Podsieć: 192.168."))
+            x = int(input("Zakres hostów od: 192.168." + str(a) + "."))
+            y = int(input("Zakres hostów do: 192.168." + str(a) + ".")) + 1
+        except ValueError:
+            print('Wprowadzona została niepoprawna wartość.')
+            continue
+        login_text = ("Podaj login: ")
+        passw_text = ("Podaj hasło: ")
+        login = input(login_text)
+        passw = input(passw_text)
+        http = "http://"
+        ip_uniview = "192.168." + str(a) + "."
+        channeltitle_rest = "/cgi-bin/configManager.cgi?action=getConfig&name=ChannelTitle"
+        p = pings.Ping()
+        for i in range(x, y):
+            ip_rest = str(i)
+            ping_ip = str(ip_uniview + ip_rest)
+            response = p.ping(ping_ip)
+            print(ping_ip)
+            if (response.is_reached()):
+                channeltitle = requests.get(http + ip_uniview + str(ip_rest) + channeltitle_rest, auth=HTTPDigestAuth(login, passw), verify=False, timeout=10)
+                if channeltitle.text != "":
+                    print(channeltitle.text)
+                else:
+                    channeltitle = requests.get(http + ip_uniview + str(ip_rest) + channeltitle_rest, auth=(login, passw))
+                    print(channeltitle.text)
             else:
-                channeltitle = requests.get(http + ip_uniview + str(ip_rest) + channeltitle_rest, auth=(login, passw))
-                print(channeltitle.text)
-        else:
-            print("OFFLINE\n")
+                print("OFFLINE\n")
+        break
 
 
 def uniview_new():
-    a = input("Podsieć: 192.168.")
-    x = int(input("Zakres hostów od: 192.168." + a + "."))
-    y = int(input("Zakres hostów do: 192.168." + a + ".")) + 1
-    login_text = ("Podaj login: ")
-    passw_text = ("Podaj hasło: ")
-    login = input(login_text)
-    passw = input(passw_text)
-    http = "http://"
-    ip_uniview = "192.168." + a + "."
-    static = "/LAPI/V1.0/"
-    ddns_both_unv = "Network/DDNS"
-    sd_both_unv = "Channel/0/System/DeviceStatus/SD"
-    run_ipc_unv = "System/DeviceRunInfo"
-    nets_ipc_unv = "NetWork/InterFace/Nets/0"
-    mans_ipc_unv = "System/ManageServer"
-    localtime_ipc_unv = "System/Time/LocalTime"
-    time_ipc_unv = "Channel/0/System/Time"
-    people_ipc_unv = "Channel/0/Smart/PeopleCount"
-    dns_ipc_unv = "NetWork/DNS"
-    port_ipc_unv = "NetWork/Port"
-    videoinmode_ipc_unv = "Channel/0/Media/VideoInMode"
-    video_ipc_unv = "Channel/0/Media/VideoEncode"
-    storage_ipc_unv = "Channel/0/Media/Storage"
-    living_ipc_unv = "Channel/0/Media/LivingStream"
-    basic_ipc_unv = "System/DeviceBasicInfo"
-    osd_ipc_unv = "Channel/0/Media/OSD"
-    info_nvr_unv = "System/DeviceInfo"
-    currentandsupport_nvr_unv = "System/Language/CurrentAndSupport"
-    run_nvr_unv = "System/RunInfo"
-    ntp_nvr_unv = "System/TimeNTP"
-    ports_nvr_unv = "Network/Ports"
-    upnp_nvr_unv = "Network/UPNP"
-    channeldetailinfos_nvr_unv = "Channels/System/ChannelDetailInfos"
-    containers_nvr_unv = "Storage/Containers"
-    advanced_nvr_unv = "System/Advanced"
-    p = pings.Ping()
-    for i in range(x, y):
-        ip_rest = str(i)
-        ping_ip = str(ip_uniview + ip_rest)
-        response = p.ping(ping_ip)
-        print(ping_ip)
-        #response = p.ping("192.168.135.50"))
-        #print (response)
-        if (response.is_reached()):
-            ddns_both_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + ddns_both_unv, auth=HTTPDigestAuth(login, passw))
-            sd_both_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + sd_both_unv, auth=HTTPDigestAuth(login, passw))
-            run_ipc_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + run_ipc_unv, auth=HTTPDigestAuth(login, passw))
-            nets_ipc_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + nets_ipc_unv, auth=HTTPDigestAuth(login, passw))
-            mans_ipc_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + mans_ipc_unv, auth=HTTPDigestAuth(login, passw))
-            localtime_ipc_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + localtime_ipc_unv, auth=HTTPDigestAuth(login, passw))
-            time_ipc_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + time_ipc_unv, auth=HTTPDigestAuth(login, passw))
-            people_ipc_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + people_ipc_unv, auth=HTTPDigestAuth(login, passw))
-            dns_ipc_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + dns_ipc_unv, auth=HTTPDigestAuth(login, passw))
-            port_ipc_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + port_ipc_unv, auth=HTTPDigestAuth(login, passw))
-            videoinmode_ipc_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + videoinmode_ipc_unv, auth=HTTPDigestAuth(login, passw))
-            video_ipc_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + video_ipc_unv, auth=HTTPDigestAuth(login, passw))
-            storage_ipc_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + storage_ipc_unv, auth=HTTPDigestAuth(login, passw))
-            living_ipc_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + living_ipc_unv, auth=HTTPDigestAuth(login, passw))
-            basic_ipc_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + basic_ipc_unv, auth=HTTPDigestAuth(login, passw))
-            osd_ipc_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + osd_ipc_unv, auth=HTTPDigestAuth(login, passw))
-            info_nvr_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + info_nvr_unv, auth=HTTPDigestAuth(login, passw))
-            currentandsupport_nvr_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + currentandsupport_nvr_unv, auth=HTTPDigestAuth(login, passw))
-            run_nvr_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + run_nvr_unv, auth=HTTPDigestAuth(login, passw))
-            ntp_nvr_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + ntp_nvr_unv, auth=HTTPDigestAuth(login, passw))
-            ports_nvr_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + ports_nvr_unv, auth=HTTPDigestAuth(login, passw))
-            upnp_nvr_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + upnp_nvr_unv, auth=HTTPDigestAuth(login, passw))
-            channeldetailinfos_nvr_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + channeldetailinfos_nvr_unv, auth=HTTPDigestAuth(login, passw))
-            containers_nvr_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + containers_nvr_unv, auth=HTTPDigestAuth(login, passw))
-            advanced_nvr_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + advanced_nvr_unv, auth=HTTPDigestAuth(login, passw))
-            #c = requests.get("192.168.135.50", auth=HTTPDigestAuth(login, passw))
-            print("DDNS: \n"+ ddns_both_unv_x.text)
-            print("SD: \n"+ sd_both_unv_x.text)
-            print("RUNTIME: \n"+ run_ipc_unv_x.text)
-            print("Netstat: \n"+ nets_ipc_unv_x.text)
-            print("Mans: \n"+ mans_ipc_unv_x.text)
-            print("Localtime: \n"+ localtime_ipc_unv_x.text)
-            print("Time: \n"+ time_ipc_unv_x.text)
-            print("People: \n"+ people_ipc_unv_x.text)
-            print("Dns: \n"+ dns_ipc_unv_x.text)
-            print("Port: \n"+ port_ipc_unv_x.text)
-            print("Videoinmode: \n"+ videoinmode_ipc_unv_x.text)
-            print("Video: \n"+ video_ipc_unv_x.text)
-            print("Storage: \n"+ storage_ipc_unv_x.text)
-            print("Living: \n"+ living_ipc_unv_x.text)
-            print("Basic: \n"+ basic_ipc_unv_x.text)
-            print("Osd: \n"+ osd_ipc_unv_x.text)
-            print("Info: \n"+ info_nvr_unv_x.text)
-            print("Currentsupport: \n"+ currentandsupport_nvr_unv_x.text)
-            print("Runtime nvr: \n"+ run_nvr_unv_x.text)
-            print("NTP: \n"+ ntp_nvr_unv_x.text)
-            print("Ports: \n"+ ports_nvr_unv_x.text)
-            print("Upnp: \n"+ upnp_nvr_unv_x.text)
-            print("Channeldetail: \n"+ channeldetailinfos_nvr_unv_x.text)
-            print("Containers: \n"+ containers_nvr_unv_x.text)
-            print("Advanced: \n"+ advanced_nvr_unv_x.text)
-            #print(systeminfo.url)
-            #print(systeminfo.status_code)
-        else:
-            print("OFFLINE\n")    
+    while True:
+        try:
+            a = int(input("Podsieć: 192.168."))
+            x = int(input("Zakres hostów od: 192.168." + str(a) + "."))
+            y = int(input("Zakres hostów do: 192.168." + str(a) + ".")) + 1
+        except ValueError:
+            print('Wprowadzona została niepoprawna wartość.')
+            continue
+        login_text = ("Podaj login: ")
+        passw_text = ("Podaj hasło: ")
+        login = input(login_text)
+        passw = input(passw_text)
+        http = "http://"
+        ip_uniview = "192.168." + str(a) + "."
+        static = "/LAPI/V1.0/"
+        ddns_both_unv = "Network/DDNS"
+        sd_both_unv = "Channel/0/System/DeviceStatus/SD"
+        run_ipc_unv = "System/DeviceRunInfo"
+        nets_ipc_unv = "NetWork/InterFace/Nets/0"
+        mans_ipc_unv = "System/ManageServer"
+        localtime_ipc_unv = "System/Time/LocalTime"
+        time_ipc_unv = "Channel/0/System/Time"
+        people_ipc_unv = "Channel/0/Smart/PeopleCount"
+        dns_ipc_unv = "NetWork/DNS"
+        port_ipc_unv = "NetWork/Port"
+        videoinmode_ipc_unv = "Channel/0/Media/VideoInMode"
+        video_ipc_unv = "Channel/0/Media/VideoEncode"
+        storage_ipc_unv = "Channel/0/Media/Storage"
+        living_ipc_unv = "Channel/0/Media/LivingStream"
+        basic_ipc_unv = "System/DeviceBasicInfo"
+        osd_ipc_unv = "Channel/0/Media/OSD"
+        info_nvr_unv = "System/DeviceInfo"
+        currentandsupport_nvr_unv = "System/Language/CurrentAndSupport"
+        run_nvr_unv = "System/RunInfo"
+        ntp_nvr_unv = "System/TimeNTP"
+        ports_nvr_unv = "Network/Ports"
+        upnp_nvr_unv = "Network/UPNP"
+        channeldetailinfos_nvr_unv = "Channels/System/ChannelDetailInfos"
+        containers_nvr_unv = "Storage/Containers"
+        advanced_nvr_unv = "System/Advanced"
+        p = pings.Ping()
+        for i in range(x, y):
+            ip_rest = str(i)
+            ping_ip = str(ip_uniview + ip_rest)
+            response = p.ping(ping_ip)
+            print(ping_ip)
+            #response = p.ping("192.168.135.50"))
+            #print (response)
+            if (response.is_reached()):
+                ddns_both_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + ddns_both_unv, auth=HTTPDigestAuth(login, passw))
+                sd_both_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + sd_both_unv, auth=HTTPDigestAuth(login, passw))
+                run_ipc_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + run_ipc_unv, auth=HTTPDigestAuth(login, passw))
+                nets_ipc_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + nets_ipc_unv, auth=HTTPDigestAuth(login, passw))
+                mans_ipc_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + mans_ipc_unv, auth=HTTPDigestAuth(login, passw))
+                localtime_ipc_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + localtime_ipc_unv, auth=HTTPDigestAuth(login, passw))
+                time_ipc_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + time_ipc_unv, auth=HTTPDigestAuth(login, passw))
+                people_ipc_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + people_ipc_unv, auth=HTTPDigestAuth(login, passw))
+                dns_ipc_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + dns_ipc_unv, auth=HTTPDigestAuth(login, passw))
+                port_ipc_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + port_ipc_unv, auth=HTTPDigestAuth(login, passw))
+                videoinmode_ipc_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + videoinmode_ipc_unv, auth=HTTPDigestAuth(login, passw))
+                video_ipc_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + video_ipc_unv, auth=HTTPDigestAuth(login, passw))
+                storage_ipc_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + storage_ipc_unv, auth=HTTPDigestAuth(login, passw))
+                living_ipc_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + living_ipc_unv, auth=HTTPDigestAuth(login, passw))
+                basic_ipc_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + basic_ipc_unv, auth=HTTPDigestAuth(login, passw))
+                osd_ipc_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + osd_ipc_unv, auth=HTTPDigestAuth(login, passw))
+                info_nvr_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + info_nvr_unv, auth=HTTPDigestAuth(login, passw))
+                currentandsupport_nvr_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + currentandsupport_nvr_unv, auth=HTTPDigestAuth(login, passw))
+                run_nvr_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + run_nvr_unv, auth=HTTPDigestAuth(login, passw))
+                ntp_nvr_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + ntp_nvr_unv, auth=HTTPDigestAuth(login, passw))
+                ports_nvr_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + ports_nvr_unv, auth=HTTPDigestAuth(login, passw))
+                upnp_nvr_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + upnp_nvr_unv, auth=HTTPDigestAuth(login, passw))
+                channeldetailinfos_nvr_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + channeldetailinfos_nvr_unv, auth=HTTPDigestAuth(login, passw))
+                containers_nvr_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + containers_nvr_unv, auth=HTTPDigestAuth(login, passw))
+                advanced_nvr_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + advanced_nvr_unv, auth=HTTPDigestAuth(login, passw))
+                #c = requests.get("192.168.135.50", auth=HTTPDigestAuth(login, passw))
+                print("DDNS: \n"+ ddns_both_unv_x.text)
+                print("SD: \n"+ sd_both_unv_x.text)
+                print("RUNTIME: \n"+ run_ipc_unv_x.text)
+                print("Netstat: \n"+ nets_ipc_unv_x.text)
+                print("Mans: \n"+ mans_ipc_unv_x.text)
+                print("Localtime: \n"+ localtime_ipc_unv_x.text)
+                print("Time: \n"+ time_ipc_unv_x.text)
+                print("People: \n"+ people_ipc_unv_x.text)
+                print("Dns: \n"+ dns_ipc_unv_x.text)
+                print("Port: \n"+ port_ipc_unv_x.text)
+                print("Videoinmode: \n"+ videoinmode_ipc_unv_x.text)
+                print("Video: \n"+ video_ipc_unv_x.text)
+                print("Storage: \n"+ storage_ipc_unv_x.text)
+                print("Living: \n"+ living_ipc_unv_x.text)
+                print("Basic: \n"+ basic_ipc_unv_x.text)
+                print("Osd: \n"+ osd_ipc_unv_x.text)
+                print("Info: \n"+ info_nvr_unv_x.text)
+                print("Currentsupport: \n"+ currentandsupport_nvr_unv_x.text)
+                print("Runtime nvr: \n"+ run_nvr_unv_x.text)
+                print("NTP: \n"+ ntp_nvr_unv_x.text)
+                print("Ports: \n"+ ports_nvr_unv_x.text)
+                print("Upnp: \n"+ upnp_nvr_unv_x.text)
+                print("Channeldetail: \n"+ channeldetailinfos_nvr_unv_x.text)
+                print("Containers: \n"+ containers_nvr_unv_x.text)
+                print("Advanced: \n"+ advanced_nvr_unv_x.text)
+                #print(systeminfo.url)
+                #print(systeminfo.status_code)
+            else:
+                print("OFFLINE\n")
+        break
 
 main()
 

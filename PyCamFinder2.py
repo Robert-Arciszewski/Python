@@ -11,10 +11,9 @@ socket.setdefaulttimeout(0.5)
 
 def main():
     print ("\n\n")
-    print("_______________ PyCamScanner v1.0 _______________")
-    print("\n")
+    print("_______________ PyCamScanner v1.0.20181210 _______________")
     #print(str("____________________ ")+str(datetime.now().strftime('%m-%d-%y'))+" _______________")
-
+    print("\n")
     menu()
 
 

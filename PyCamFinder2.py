@@ -95,51 +95,6 @@ def menu():
         menu()
 
 
-
-def dahua_nvr_old():
-    a = input("Podsieć: 192.168.")
-    x = int(input("Zakres hostów od: 192.168." + a + "."))
-    y = int(input("Zakres hostów do: 192.168." + a + ".")) + 1
-    login = "curl --digest -s -u 'admin:admin123' '"
-    ip_uniview = "192.168." + a + "."
-    for ip_rest in range(x, y):
-        cloud_rest = "/cgi-bin/configManager.cgi?action=getConfig&name=T2UServer' | grep 'RegisterServer' | awk -F '0].' '{print $2}'"
-        systeminfo_rest = "/cgi-bin/magicBox.cgi?action=getSystemInfo'"
-        machinename_rest = "/cgi-bin/magicBox.cgi?action=getMachineName'"
-        hardwareversion_rest = "/cgi-bin/magicBox.cgi?action=getHardwareVersion'"
-        softwareVersion_rest = "/cgi-bin/magicBox.cgi?action=getSoftwareVersion'"
-        currentTime_rest = "/cgi-bin/global.cgi?action=getCurrentTime'"
-        configNetwork_rest = "/cgi-bin/configManager.cgi?action=getConfig&name=Network'"
-        configChannelTitle_rest = "/cgi-bin/configManager.cgi?action=getConfig&name=ChannelTitle'"
-        configEncode_rest = "/cgi-bin/configManager.cgi?action=getConfig&name=Encode' | grep Video.Compression"
-        cloud = (login + ip_uniview + str(ip_rest) + cloud_rest)
-        systeminfo = (login + ip_uniview + str(ip_rest) + systeminfo_rest)
-        machinename = (login + ip_uniview + str(ip_rest) + machinename_rest)
-        hardwareversion = (login + ip_uniview + str(ip_rest) + hardwareversion_rest)
-        softwareVersion = (login + ip_uniview + str(ip_rest) + softwareVersion_rest)
-        currentTime = (login + ip_uniview + str(ip_rest) + currentTime_rest)
-        configNetwork = (login + ip_uniview + str(ip_rest) + configNetwork_rest)
-        configChannelTitle = (login + ip_uniview + str(ip_rest) + configChannelTitle_rest)
-        configEncode = (login + ip_uniview + str(ip_rest) + configEncode_rest)
-        # test = cloud +"\n" + systeminfo +"\n" + machinename + "\n" + hardwareversion + "\n" +softwareVersion + "\n" + currentTime + "\n" + configNetwork + "\n" + configChannelTitle + "\n" + configEncode
-        print("IP rejestratora dahua: {0}{1}\n".format(str(ip_uniview), str(ip_rest)))
-        print(subprocess.Popen(cloud, shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip())
-        print(subprocess.Popen(systeminfo, shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip())
-        print(
-            subprocess.Popen(machinename, shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip())
-        print(subprocess.Popen(hardwareversion, shell=True, stdout=subprocess.PIPE).communicate()[0].decode(
-            'utf-8').strip())
-        print(subprocess.Popen(softwareVersion, shell=True, stdout=subprocess.PIPE).communicate()[0].decode(
-            'utf-8').strip())
-        print(
-            subprocess.Popen(currentTime, shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip())
-        print(subprocess.Popen(configNetwork, shell=True, stdout=subprocess.PIPE).communicate()[0].decode(
-            'utf-8').strip())
-        print(subprocess.Popen(configChannelTitle, shell=True, stdout=subprocess.PIPE).communicate()[0].decode(
-            'utf-8').strip())
-        print(
-            subprocess.Popen(configEncode, shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip())
-
 def dahua_new():
     while True:
         try:
@@ -234,18 +189,6 @@ def dahua_nvr_new_cloud():
 
         break
 
-def dahua_nvr_ip():
-    a = input("Podsieć: 192.168.")
-    x = int(input("Zakres hostów od: 192.168." + a + "."))
-    y = int(input("Zakres hostów do: 192.168." + a + ".")) + 1
-    login = "curl --digest -s -u 'admin:admin123' '"
-    ip_uniview = "192.168." + a + "."
-    for ip_rest in range(x, y):
-        cloud_rest = "/cgi-bin/configManager.cgi?action=getConfig&name=T2UServer' | grep 'RegisterServer' | awk -F '0].' '{print $2}'"
-        cloud = (login + ip_uniview + str(ip_rest) + cloud_rest)
-        print("IP rejestratora dahua: {0}{1}\n".format(str(ip_uniview), str(ip_rest)))
-        print(subprocess.Popen(cloud, shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip())
-
 
 def dahua_nvr_new_ip():
     while True:
@@ -279,35 +222,6 @@ def dahua_nvr_new_ip():
             else:
                 print("OFFLINE\n")
         break
-
-def dahua_nvr_ip():
-    a = input("Podsieć: 192.168.")
-    x = int(input("Zakres hostów od: 192.168." + a + "."))
-    y = int(input("Zakres hostów do: 192.168." + a + ".")) + 1
-    login = "curl --digest -s -u 'admin:admin123' '"
-    ip_uniview = "192.168." + a + "."
-    for ip_rest in range(x, y):
-        configNetwork_rest = "/cgi-bin/configManager.cgi?action=getConfig&name=Network'"
-        configNetwork = (login + ip_uniview + str(ip_rest) + configNetwork_rest)
-        print("IP rejestratora dahua: {0}{1}\n".format(str(ip_uniview), str(ip_rest)))
-        print(subprocess.Popen(configNetwork, shell=True, stdout=subprocess.PIPE).communicate()[0].decode(
-            'utf-8').strip())
-
-
-def dahua_nvr_encode():
-    a = input("Podsieć: 192.168.")
-    x = int(input("Zakres hostów od: 192.168." + a + "."))
-    y = int(input("Zakres hostów do: 192.168." + a + ".")) + 1
-    login = "curl --digest -s -u 'admin:admin123' '"
-    ip_uniview = "192.168." + a + "."
-    for ip_rest in range(x, y):
-        configEncode_rest = "/cgi-bin/configManager.cgi?action=getConfig&name=Encode' | grep Video.Compression"
-        configEncode = (login + ip_uniview + str(ip_rest) + configEncode_rest)
-        print("IP rejestratora dahua: {0}{1}\n".format(str(ip_uniview), str(ip_rest)))
-        print(
-            subprocess.Popen(configEncode, shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip())
-
-
 
 
 def dahua_nvr_new_encode():
@@ -345,20 +259,6 @@ def dahua_nvr_new_encode():
 
 
 
-def dahua_nvr_time():
-    a = input("Podsieć: 192.168.")
-    x = int(input("Zakres hostów od: 192.168." + a + "."))
-    y = int(input("Zakres hostów do: 192.168." + a + ".")) + 1
-    login = "curl --digest -s -u 'admin:admin123' '"
-    ip_uniview = "192.168." + a + "."
-    for ip_rest in range(x, y):
-        currentTime_rest = "/cgi-bin/global.cgi?action=getCurrentTime'"
-        currentTime = (login + ip_uniview + str(ip_rest) + currentTime_rest)
-        print("\nIP rejestratora dahua: {0}{1}\n".format(str(ip_uniview), str(ip_rest)))
-        print(
-            subprocess.Popen(currentTime, shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip())
-
-
 def dahua_nvr_new_time():
     a = input("Podsieć: 192.168.")
     x = int(input("Zakres hostów od: 192.168." + a + "."))
@@ -392,19 +292,6 @@ def dahua_nvr_new_time():
         else:
             print("OFFLINE\n")
 
-
-def dahua_nvr_software():
-    a = input("Podsieć: 192.168.")
-    x = int(input("Zakres hostów od: 192.168." + a + "."))
-    y = int(input("Zakres hostów do: 192.168." + a + ".")) + 1
-    login = "curl --digest -s -u 'admin:admin123' '"
-    ip_uniview = "192.168." + a + "."
-    for ip_rest in range(x, y):
-        softwareVersion_rest = "/cgi-bin/magicBox.cgi?action=getSoftwareVersion'"
-        softwareVersion = (login + ip_uniview + str(ip_rest) + softwareVersion_rest)
-        print("\nIP rejestratora dahua: {0}{1}\n".format(str(ip_uniview), str(ip_rest)))
-        print(subprocess.Popen(softwareVersion, shell=True, stdout=subprocess.PIPE).communicate()[0].decode(
-            'utf-8').strip())
 
 
 def dahua_nvr_new_software():
@@ -441,21 +328,6 @@ def dahua_nvr_new_software():
             print("OFFLINE\n")
 
 
-
-def dahua_nvr_channelname():
-    a = input("Podsieć: 192.168.")
-    x = int(input("Zakres hostów od: 192.168." + a + "."))
-    y = int(input("Zakres hostów do: 192.168." + a + ".")) + 1
-    login = "curl --digest -s -u 'admin:admin123' '"
-    ip_uniview = "192.168." + a + "."
-    for ip_rest in range(x, y):
-        configChannelTitle_rest = "/cgi-bin/configManager.cgi?action=getConfig&name=ChannelTitle'"
-        configChannelTitle = (login + ip_uniview + str(ip_rest) + configChannelTitle_rest)
-        print("\nIP rejestratora dahua: {0}{1}\n".format(str(ip_uniview), str(ip_rest)))
-        print(subprocess.Popen(configChannelTitle, shell=True, stdout=subprocess.PIPE).communicate()[0].decode(
-            'utf-8').strip())
-
-
 def dahua_nvr_new_channelname():
     a = input("Podsieć: 192.168.")
     x = int(input("Zakres hostów od: 192.168." + a + "."))
@@ -482,72 +354,6 @@ def dahua_nvr_new_channelname():
                 print(channeltitle.text)
         else:
             print("OFFLINE\n")
-
-
-
-def dahua_ipc():
-    a = input("Podsieć: 192.168.")
-    x = int(input("Zakres hostów od: 192.168." + a + "."))
-    y = int(input("Zakres hostów do: 192.168." + a + ".")) + 1
-    login = "curl -s -u 'admin:admin' '"
-    ip_uniview = "192.168." + a + "."
-    for ip_rest in range(x, y):
-        cloud_rest = "/cgi-bin/configManager.cgi?action=getConfig&name=T2UServer' | grep 'RegisterServer' | awk -F '0].' '{print $2}'"
-        systeminfo_rest = "/cgi-bin/magicBox.cgi?action=getSystemInfo'"
-        machinename_rest = "/cgi-bin/magicBox.cgi?action=getMachineName'"
-        hardwareversion_rest = "/cgi-bin/magicBox.cgi?action=getHardwareVersion'"
-        softwareVersion_rest = "/cgi-bin/magicBox.cgi?action=getSoftwareVersion'"
-        currentTime_rest = "/cgi-bin/global.cgi?action=getCurrentTime'"
-        configNetwork_rest = "/cgi-bin/configManager.cgi?action=getConfig&name=Network'"
-        configChannelTitle_rest = "/cgi-bin/configManager.cgi?action=getConfig&name=ChannelTitle'"
-        configEncode_rest = "/cgi-bin/configManager.cgi?action=getConfig&name=Encode' | grep Video.Compression"
-        cloud = (login + ip_uniview + str(ip_rest) + cloud_rest)
-        systeminfo = (login + ip_uniview + str(ip_rest) + systeminfo_rest)
-        machinename = (login + ip_uniview + str(ip_rest) + machinename_rest)
-        hardwareversion = (login + ip_uniview + str(ip_rest) + hardwareversion_rest)
-        softwareVersion = (login + ip_uniview + str(ip_rest) + softwareVersion_rest)
-        currentTime = (login + ip_uniview + str(ip_rest) + currentTime_rest)
-        configNetwork = (login + ip_uniview + str(ip_rest) + configNetwork_rest)
-        configChannelTitle = (login + ip_uniview + str(ip_rest) + configChannelTitle_rest)
-        configEncode = (login + ip_uniview + str(ip_rest) + configEncode_rest)
-        # test = cloud +"\n" + systeminfo +"\n" + machinename + "\n" + hardwareversion + "\n" +softwareVersion + "\n" + currentTime + "\n" + configNetwork + "\n" + configChannelTitle + "\n" + configEncode
-        print("IP kamery dahua: {0}{1}\n".format(str(ip_uniview), str(ip_rest)))
-        print(subprocess.Popen(cloud, shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip())
-        print(subprocess.Popen(systeminfo, shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip())
-        print(
-            subprocess.Popen(machinename, shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip())
-        print(subprocess.Popen(hardwareversion, shell=True, stdout=subprocess.PIPE).communicate()[0].decode(
-            'utf-8').strip())
-        print(subprocess.Popen(softwareVersion, shell=True, stdout=subprocess.PIPE).communicate()[0].decode(
-            'utf-8').strip())
-        print(
-            subprocess.Popen(currentTime, shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip())
-        print(subprocess.Popen(configNetwork, shell=True, stdout=subprocess.PIPE).communicate()[0].decode(
-            'utf-8').strip())
-        print(subprocess.Popen(configChannelTitle, shell=True, stdout=subprocess.PIPE).communicate()[0].decode(
-            'utf-8').strip())
-        print(
-            subprocess.Popen(configEncode, shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip())
-
-
-def uniview_nvr():
-    a = input("Podsieć: 192.168.")
-    x = int(input("Zakres hostów od: 192.168." + a + "."))
-    y = int(input("Zakres hostów do: 192.168." + a + ".")) + 1
-    login = "curl -s -u 'admin:admin123' '"
-    ip_uniview = "192.168." + a + "."
-    for ip_rest in range(x, y):
-        timentp_rest = "/LAPI/V1.0/System/TimeNTP'"
-        runinfo_rest = "/LAPI/V1.0/System/RunInfo'"
-        lang_rest = "/LAPI/V1.0/System/Language/CurrentAndSupport'"
-        timentp = (login + ip_uniview + str(ip_rest) + timentp_rest)
-        runinfo = (login + ip_uniview + str(ip_rest) + runinfo_rest)
-        lang = (login + ip_uniview + str(ip_rest) + lang_rest)
-        # test = cloud +"\n" + systeminfo +"\n" + machinename + "\n" + hardwareversion + "\n" +softwareVersion + "\n" + currentTime + "\n" + configNetwork + "\n" + configChannelTitle + "\n" + configEncode
-        print("IP kamery uniview: {0}{1}\n".format(str(ip_uniview), str(ip_rest)))
-        print(subprocess.Popen(timentp, shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip())
-        print(subprocess.Popen(runinfo, shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip())
-        print(subprocess.Popen(lang, shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip())
 
 
 def uniview_new():

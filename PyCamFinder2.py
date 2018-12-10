@@ -199,7 +199,7 @@ def dahua_new_files():
                     print("Konfiguracja sieci: \n" + confignetwork.text, file=f)
                     print("Kodowanie: \n" + configencode.text, file=f)
                     print("Kanały: \n" + channeltitle.text, file=f)
-                    #print(confignetwork.url)
+                    #print(confignetwork.url)_
                     #print(confignetwork.status_code)
             else:
                 filepathoffline = "Raport/OFFLINE_"+ping_ip+".txt"

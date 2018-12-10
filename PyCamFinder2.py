@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import sys
 import requests
 from requests.auth import HTTPDigestAuth
@@ -6,7 +6,6 @@ import subprocess
 from subprocess import PIPE, run
 import pings
 import socket
-from datetime import datetime
 
 socket.setdefaulttimeout(0.5)
 

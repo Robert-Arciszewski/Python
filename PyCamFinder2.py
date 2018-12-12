@@ -8,8 +8,6 @@ import pings
 import socket
 import os
 
-socket.setdefaulttimeout(0.5)
-
 def main():
     print ("\n\n")
     print("_______________ PyCamScanner v1.0.20181210 _______________")
@@ -32,13 +30,14 @@ def menu():
         print("\n Menu ->  Dahua")
         choice = input("""
                     0: Kompletny raport - podgląd
-                    1: Kompletny raport + zapis do plików
+                    1: Kompletny raport - zapis do pliku
                     2: Chmura
                     3: Adresy IP
                     4: Kodowanie H.264/H.265
                     5: Ustawione godziny
                     6: Wersja oprogramowania
                     7: Nazwy kanałów
+                    8: Typ urządzenia
 
                     9: Powrót do menu
                     0: Wyjście
@@ -61,7 +60,7 @@ def menu():
         elif choice == '7':
             dahua_nvr_new_channelname()
         elif choice == '8':
-            dahua_nvr_new_ip()
+            dahua_nvr_new_devicetype()
         elif choice == '9':
             menu()
         elif choice == '0':
@@ -117,6 +116,7 @@ def dahua_new():
         currenttime_rest = "/cgi-bin/global.cgi?action=getCurrentTime"
         softwareversion_rest = "/cgi-bin/magicBox.cgi?action=getSoftwareVersion"
         channeltitle_rest = "/cgi-bin/configManager.cgi?action=getConfig&name=ChannelTitle"
+        devicetype_rest = "/cgi-bin/magicBox.cgi?action=getDeviceType"
         p = pings.Ping()
         for i in range(x, y):
             ip_rest = str(i)
@@ -131,8 +131,10 @@ def dahua_new():
                 currenttime = requests.get(http + ip_uniview + str(ip_rest) + currenttime_rest,auth=HTTPDigestAuth(login, passw))
                 softwareversion = requests.get(http + ip_uniview + str(ip_rest) +softwareversion_rest,auth=HTTPDigestAuth(login, passw))
                 channeltitle = requests.get(http + ip_uniview + str(ip_rest) + channeltitle_rest,auth=HTTPDigestAuth(login, passw))
+                devicetype = requests.get(http + ip_uniview + str(ip_rest) + devicetype_rest,auth=HTTPDigestAuth(login, passw))
                 print("Informacje dla: "+ ping_ip +"\n")
                 print("Informacje systemowe: \n"+ systeminfo.text)
+                print("Model urządzenia: \n"+ devicetype.text)
                 print("Czas: \n" + currenttime.text)
                 print("Wersja oprogramowania: \n" + softwareversion.text)
                 print("Chmura: \n"+ cloud.text)
@@ -169,6 +171,7 @@ def dahua_new_files():
         currenttime_rest = "/cgi-bin/global.cgi?action=getCurrentTime"
         softwareversion_rest = "/cgi-bin/magicBox.cgi?action=getSoftwareVersion"
         channeltitle_rest = "/cgi-bin/configManager.cgi?action=getConfig&name=ChannelTitle"
+        devicetype_rest = "/cgi-bin/magicBox.cgi?action=getDeviceType"
         p = pings.Ping()
         for i in range(x, y):
             ip_rest = str(i)
@@ -185,6 +188,7 @@ def dahua_new_files():
                 currenttime = requests.get(http + ip_uniview + str(ip_rest) + currenttime_rest,auth=HTTPDigestAuth(login, passw))
                 softwareversion = requests.get(http + ip_uniview + str(ip_rest) +softwareversion_rest,auth=HTTPDigestAuth(login, passw))
                 channeltitle = requests.get(http + ip_uniview + str(ip_rest) + channeltitle_rest,auth=HTTPDigestAuth(login, passw))
+                devicetype = requests.get(http + ip_uniview + str(ip_rest) + devicetype_rest,auth=HTTPDigestAuth(login, passw))
                 #c = requests.get("192.168.135.50", auth=HTTPDigestAuth(login, passw))
                 #file = open('Dahua.txt', 'w')
                 #
@@ -193,6 +197,7 @@ def dahua_new_files():
                 with open(filepath, 'w', encoding='utf-8') as f:
                     print("Informacje dla: "+ ping_ip +"\n", file=f)
                     print("Informacje systemowe: \n"+ systeminfo.text, file=f)
+                    print("Model urządzenia: \n" + devicetype.text, file=f)
                     print("Czas: \n" + currenttime.text, file=f)
                     print("Wersja oprogramowania: \n" + softwareversion.text, file=f)
                     print("Chmura: \n"+ cloud.text, file=f)
@@ -443,6 +448,42 @@ def dahua_nvr_new_channelname():
             else:
                 print("OFFLINE\n")
         break
+
+
+def dahua_nvr_new_devicetype():
+    while True:
+        try:
+            a = int(input("Podsieć: 192.168."))
+            x = int(input("Zakres hostów od: 192.168." + str(a) + "."))
+            y = int(input("Zakres hostów do: 192.168." + str(a) + ".")) + 1
+        except ValueError:
+            print('Wprowadzona została niepoprawna wartość.')
+            continue
+        login_text = ("Podaj login: ")
+        passw_text = ("Podaj hasło: ")
+        login = input(login_text)
+        passw = input(passw_text)
+        http = "http://"
+        ip_uniview = "192.168." + str(a) + "."
+        devicetype_rest = "/cgi-bin/magicBox.cgi?action=getDeviceType"
+        p = pings.Ping()
+        for i in range(x, y):
+            ip_rest = str(i)
+            ping_ip = str(ip_uniview + ip_rest)
+            response = p.ping(ping_ip)
+            print(ping_ip)
+            if (response.is_reached()):
+                channeltitle = requests.get(http + ip_uniview + str(ip_rest) + devicetype_rest, auth=HTTPDigestAuth(login, passw), verify=False, timeout=10)
+                if channeltitle.text != "":
+                    print(channeltitle.text)
+                else:
+                    channeltitle = requests.get(http + ip_uniview + str(ip_rest) + devicetype_rest, auth=(login, passw))
+                    print(channeltitle.text)
+            else:
+                print("OFFLINE\n")
+        break
+
+
 
 
 def uniview_new():

@@ -7,6 +7,7 @@ from subprocess import PIPE, run
 import pings
 import socket
 import os
+from datetime import datetime
 
 def main():
     print ("\n\n")
@@ -122,16 +123,29 @@ def dahua_new():
             ip_rest = str(i)
             ping_ip = str(ip_uniview + ip_rest)
             response = p.ping(ping_ip)
+            httpdigest = ',auth=HTTPDigestAuth('+login+','+passw+')'
+            httpauth = ',auth=('+login+','+passw+')'
             print(ping_ip)
             if (response.is_reached()):
-                systeminfo = requests.get(http + ip_uniview + str(ip_rest) + uniview_url, auth=HTTPDigestAuth(login, passw))
-                cloud = requests.get(http + ip_uniview + str(ip_rest) + cloud_rest, auth=HTTPDigestAuth(login, passw))
-                confignetwork = requests.get(http + ip_uniview + str(ip_rest) + confignetwork_rest, auth=HTTPDigestAuth(login, passw))
+                systeminfo = requests.get(http + ip_uniview + str(ip_rest) + uniview_url, auth=HTTPDigestAuth(login, passw), verify=False)
+                cloud = requests.get(http + ip_uniview + str(ip_rest) + cloud_rest, auth=HTTPDigestAuth(login, passw), verify=False)
+                confignetwork = requests.get(http + ip_uniview + str(ip_rest) + confignetwork_rest, auth=HTTPDigestAuth(login, passw), verify=False)
                 configencode = requests.get(http + ip_uniview + str(ip_rest) + configencode_rest, auth=HTTPDigestAuth(login, passw))
                 currenttime = requests.get(http + ip_uniview + str(ip_rest) + currenttime_rest,auth=HTTPDigestAuth(login, passw))
                 softwareversion = requests.get(http + ip_uniview + str(ip_rest) +softwareversion_rest,auth=HTTPDigestAuth(login, passw))
                 channeltitle = requests.get(http + ip_uniview + str(ip_rest) + channeltitle_rest,auth=HTTPDigestAuth(login, passw))
                 devicetype = requests.get(http + ip_uniview + str(ip_rest) + devicetype_rest,auth=HTTPDigestAuth(login, passw))
+                if systeminfo.status_code == 401:
+                    systeminfo = requests.get(http + ip_uniview + str(ip_rest) + uniview_url,auth=(login, passw), verify=False)
+                    cloud = requests.get(http + ip_uniview + str(ip_rest) + cloud_rest, auth=(login, passw), verify=False)
+                    confignetwork = requests.get(http + ip_uniview + str(ip_rest) + confignetwork_rest, auth=(login, passw), verify=False)
+                    configencode = requests.get(http + ip_uniview + str(ip_rest) + configencode_rest, auth=(login, passw))
+                    currenttime = requests.get(http + ip_uniview + str(ip_rest) + currenttime_rest,auth=(login, passw))
+                    softwareversion = requests.get(http + ip_uniview + str(ip_rest) +softwareversion_rest,auth=(login, passw))
+                    channeltitle = requests.get(http + ip_uniview + str(ip_rest) + channeltitle_rest,auth=(login, passw))
+                    devicetype = requests.get(http + ip_uniview + str(ip_rest) + devicetype_rest,auth=(login, passw))
+                else:
+                    print("Nie mogę się zalogować do urządzenia")
                 print("Informacje dla: "+ ping_ip +"\n")
                 print("Informacje systemowe: \n"+ systeminfo.text)
                 print("Model urządzenia: \n"+ devicetype.text)
@@ -141,8 +155,8 @@ def dahua_new():
                 print("Konfiguracja sieci: \n" + confignetwork.text)
                 print("Kodowanie: \n" + configencode.text)
                 print("Kanały: \n" + channeltitle.text)
-                #print(confignetwork.url)
-                #print(confignetwork.status_code)
+                print(devicetype.url)
+                print(devicetype.status_code)
             else:
                 print("OFFLINE\n")
 
@@ -180,39 +194,74 @@ def dahua_new_files():
             print(ping_ip)
             #response = p.ping("192.168.135.50"))
             #print (response)
-            if (response.is_reached()):
-                systeminfo = requests.get(http + ip_uniview + str(ip_rest) + uniview_url, auth=HTTPDigestAuth(login, passw))
-                cloud = requests.get(http + ip_uniview + str(ip_rest) + cloud_rest, auth=HTTPDigestAuth(login, passw))
-                confignetwork = requests.get(http + ip_uniview + str(ip_rest) + confignetwork_rest, auth=HTTPDigestAuth(login, passw))
-                configencode = requests.get(http + ip_uniview + str(ip_rest) + configencode_rest, auth=HTTPDigestAuth(login, passw))
-                currenttime = requests.get(http + ip_uniview + str(ip_rest) + currenttime_rest,auth=HTTPDigestAuth(login, passw))
-                softwareversion = requests.get(http + ip_uniview + str(ip_rest) +softwareversion_rest,auth=HTTPDigestAuth(login, passw))
-                channeltitle = requests.get(http + ip_uniview + str(ip_rest) + channeltitle_rest,auth=HTTPDigestAuth(login, passw))
-                devicetype = requests.get(http + ip_uniview + str(ip_rest) + devicetype_rest,auth=HTTPDigestAuth(login, passw))
-                #c = requests.get("192.168.135.50", auth=HTTPDigestAuth(login, passw))
-                #file = open('Dahua.txt', 'w')
-                #
-                filepath = "Raport/"+ping_ip+".txt"
-                os.makedirs(os.path.dirname(filepath), exist_ok=True)
-                with open(filepath, 'w', encoding='utf-8') as f:
-                    print("Informacje dla: "+ ping_ip +"\n", file=f)
-                    print("Informacje systemowe: \n"+ systeminfo.text, file=f)
-                    print("Model urządzenia: \n" + devicetype.text, file=f)
-                    print("Czas: \n" + currenttime.text, file=f)
-                    print("Wersja oprogramowania: \n" + softwareversion.text, file=f)
-                    print("Chmura: \n"+ cloud.text, file=f)
-                    print("Konfiguracja sieci: \n" + confignetwork.text, file=f)
-                    print("Kodowanie: \n" + configencode.text, file=f)
-                    print("Kanały: \n" + channeltitle.text, file=f)
-                    #print(confignetwork.url)_
-                    #print(confignetwork.status_code)
-            else:
-                filepathoffline = "Raport/OFFLINE_"+ping_ip+".txt"
-                os.makedirs(os.path.dirname(filepathoffline), exist_ok=True)
-                with open(filepathoffline, 'w', encoding='utf-8') as o:
-                    print("OFFLINE\n", file=o)
-                #)
-                #file.close()
+            filepath = "Raport/" + ping_ip + ".txt"
+            os.makedirs(os.path.dirname(filepath), exist_ok=True)
+            with open(filepath, 'w', encoding='utf-8') as f:
+                if (response.is_reached()):
+                    systeminfo = requests.get(http + ip_uniview + str(ip_rest) + uniview_url, auth=HTTPDigestAuth(login, passw))
+                    cloud = requests.get(http + ip_uniview + str(ip_rest) + cloud_rest, auth=HTTPDigestAuth(login, passw))
+                    confignetwork = requests.get(http + ip_uniview + str(ip_rest) + confignetwork_rest, auth=HTTPDigestAuth(login, passw))
+                    configencode = requests.get(http + ip_uniview + str(ip_rest) + configencode_rest, auth=HTTPDigestAuth(login, passw))
+                    currenttime = requests.get(http + ip_uniview + str(ip_rest) + currenttime_rest,auth=HTTPDigestAuth(login, passw))
+                    softwareversion = requests.get(http + ip_uniview + str(ip_rest) + softwareversion_rest,auth=HTTPDigestAuth(login, passw))
+                    channeltitle = requests.get(http + ip_uniview + str(ip_rest) + channeltitle_rest,auth=HTTPDigestAuth(login, passw))
+                    devicetype = requests.get(http + ip_uniview + str(ip_rest) + devicetype_rest,auth=HTTPDigestAuth(login, passw))
+                    if systeminfo.status_code == 200:
+                        print("Rejestrator: " + ping_ip + "\n", file=f)
+                        print("Data wygenerowania raportu: "+ datetime.today().strftime("%Y-%m-%d %H:%M:%S"), file=f)
+                        print('Linki: \n' + str(systeminfo.url) + '\n' + str(cloud.url) + '\n' + str(confignetwork.url) + '\n' + str(configencode.url) + '\n' + str(currenttime.url) + '\n' + str(softwareversion.url) + '\n' + str(channeltitle.url) + '\n' + str(devicetype.url) + '\n', file=f)
+                        print("Informacje systemowe: \n" + systeminfo.text, file=f)
+                        print("Model urządzenia: \n" + devicetype.text, file=f)
+                        print("Czas: \n" + currenttime.text, file=f)
+                        print("Wersja oprogramowania: \n" + softwareversion.text, file=f)
+                        print("Chmura: \n" + cloud.text, file=f)
+                        print("Konfiguracja sieci: \n" + confignetwork.text, file=f)
+                        print("Kodowanie: \n" + configencode.text, file=f)
+                        print("Kanały: \n" + channeltitle.text, file=f)
+                        print("Dane rejestratora zapisane")
+                        #print(confignetwork.url)_
+                        #print(confignetwork.status_code)
+                    elif systeminfo.status_code == 401:
+                        systeminfo = requests.get(http + ip_uniview + str(ip_rest) + uniview_url,auth=(login, passw))
+                        cloud = requests.get(http + ip_uniview + str(ip_rest) + cloud_rest,auth=(login, passw))
+                        confignetwork = requests.get(http + ip_uniview + str(ip_rest) + confignetwork_rest,auth=(login, passw))
+                        configencode = requests.get(http + ip_uniview + str(ip_rest) + configencode_rest,auth=(login, passw))
+                        currenttime = requests.get(http + ip_uniview + str(ip_rest) + currenttime_rest,auth=(login, passw))
+                        softwareversion = requests.get(http + ip_uniview + str(ip_rest) + softwareversion_rest,auth=(login, passw))
+                        channeltitle = requests.get(http + ip_uniview + str(ip_rest) + channeltitle_rest,auth=(login, passw))
+                        devicetype = requests.get(http + ip_uniview + str(ip_rest) + devicetype_rest,auth=(login, passw))
+                        if systeminfo.status_code == 200:
+                            print("Kamera: " + ping_ip + "\n", file=f)
+                            print("Data wygenerowania raportu: " + datetime.now().strftime("%Y-%m-%d %H:%M:%S"),file=f)
+                            print('Linki: \n' + str(systeminfo.url) + '\n' + str(cloud.url) + '\n' + str(confignetwork.url) + '\n' + str(configencode.url) + '\n' + str(currenttime.url) + '\n' + str(softwareversion.url) + '\n' + str(channeltitle.url) + '\n' + str(devicetype.url) + '\n', file=f)
+                            print("Informacje systemowe: \n" + systeminfo.text, file=f)
+                            print("Model urządzenia: \n" + devicetype.text, file=f)
+                            print("Czas: \n" + currenttime.text, file=f)
+                            print("Wersja oprogramowania: \n" + softwareversion.text, file=f)
+                            print("Chmura: \n" + cloud.text, file=f)
+                            print("Konfiguracja sieci: \n" + confignetwork.text, file=f)
+                            print("Kodowanie: \n" + configencode.text, file=f)
+                            print("Kanały: \n" + channeltitle.text, file=f)
+                            print("Dane kamery zapisane")
+                        elif systeminfo.status_code == 401:
+                            filepathauth = "Raport/BLOKADA_" + ping_ip + ".txt"
+                            os.makedirs(os.path.dirname(filepathauth), exist_ok=True)
+                            with open(filepathauth, 'w', encoding='utf-8') as l:
+                                print("Zły login '"+login+"' lub hasło '" +passw+"' lub urządzenie zablokowane.", file=l)
+                                print("Zły login lub hasło lub urządzenie zablokowane")
+                        else:
+                            filepathproblem = "Raport/NIEZNANY_" + ping_ip + ".txt"
+                            os.makedirs(os.path.dirname(filepathproblem), exist_ok=True)
+                            with open(filepathproblem, 'w', encoding='utf-8') as p:
+                                print("Nieznany problem.", file=p)
+                                print("Nieznany problem")
+
+                else:
+                    filepathoffline = "Raport/OFFLINE_"+ping_ip+".txt"
+                    os.makedirs(os.path.dirname(filepathoffline), exist_ok=True)
+                    with open(filepathoffline, 'w', encoding='utf-8') as o:
+                        print("OFFLINE\n", file=o)
+                        print("OFFLINE")
         break
 
 

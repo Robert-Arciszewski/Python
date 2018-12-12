@@ -8,6 +8,7 @@ import pings
 import socket
 import os
 from datetime import datetime
+from contextlib import suppress
 
 def main():
     print ("\n\n")
@@ -176,6 +177,8 @@ def dahua_new_files():
         passw_text = ("Podaj hasło: ")
         login = input(login_text)
         passw = input(passw_text)
+        #alt_login = "admin"
+        #alt_passwd = "admin123"
         http = "http://"
         ip_uniview = "192.168." + str(a) + "."
         uniview_url = "/cgi-bin/magicBox.cgi?action=getSystemInfo"
@@ -221,7 +224,7 @@ def dahua_new_files():
                         print("Dane rejestratora zapisane")
                         #print(confignetwork.url)_
                         #print(confignetwork.status_code)
-                    elif systeminfo.status_code == 401:
+                    if systeminfo.status_code == 401:
                         systeminfo = requests.get(http + ip_uniview + str(ip_rest) + uniview_url,auth=(login, passw))
                         cloud = requests.get(http + ip_uniview + str(ip_rest) + cloud_rest,auth=(login, passw))
                         confignetwork = requests.get(http + ip_uniview + str(ip_rest) + confignetwork_rest,auth=(login, passw))
@@ -249,12 +252,15 @@ def dahua_new_files():
                             with open(filepathauth, 'w', encoding='utf-8') as l:
                                 print("Zły login '"+login+"' lub hasło '" +passw+"' lub urządzenie zablokowane.", file=l)
                                 print("Zły login lub hasło lub urządzenie zablokowane")
-                        else:
-                            filepathproblem = "Raport/NIEZNANY_" + ping_ip + ".txt"
-                            os.makedirs(os.path.dirname(filepathproblem), exist_ok=True)
-                            with open(filepathproblem, 'w', encoding='utf-8') as p:
-                                print("Nieznany problem.", file=p)
-                                print("Nieznany problem")
+                    else:
+                        filepathproblem = "Raport/NIEZNANY_" + ping_ip + ".txt"
+                        os.makedirs(os.path.dirname(filepathproblem), exist_ok=True)
+                        with open(filepathproblem, 'w', encoding='utf-8') as p:
+                            print("Nieznany problem.", file=p)
+                            print("Nieznany problem")
+                            print(systeminfo.url)
+                            print(systeminfo.status_code)
+
 
                 else:
                     filepathoffline = "Raport/OFFLINE_"+ping_ip+".txt"

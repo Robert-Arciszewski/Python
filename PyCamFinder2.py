@@ -2,6 +2,7 @@
 import sys
 import requests
 from requests.auth import HTTPDigestAuth
+from requests.auth import HTTPBasicAuth
 import subprocess
 from subprocess import PIPE, run
 import pings
@@ -9,6 +10,7 @@ import socket
 import os
 from datetime import datetime
 from contextlib import suppress
+import json
 
 def main():
     print ("\n\n")
@@ -197,19 +199,33 @@ def dahua_new_files():
             print(ping_ip)
             #response = p.ping("192.168.135.50"))
             #print (response)
-            filepath = "Raport/" + ping_ip + ".txt"
-            os.makedirs(os.path.dirname(filepath), exist_ok=True)
-            with open(filepath, 'w', encoding='utf-8') as f:
-                if (response.is_reached()):
-                    systeminfo = requests.get(http + ip_uniview + str(ip_rest) + uniview_url, auth=HTTPDigestAuth(login, passw))
-                    cloud = requests.get(http + ip_uniview + str(ip_rest) + cloud_rest, auth=HTTPDigestAuth(login, passw))
-                    confignetwork = requests.get(http + ip_uniview + str(ip_rest) + confignetwork_rest, auth=HTTPDigestAuth(login, passw))
-                    configencode = requests.get(http + ip_uniview + str(ip_rest) + configencode_rest, auth=HTTPDigestAuth(login, passw))
-                    currenttime = requests.get(http + ip_uniview + str(ip_rest) + currenttime_rest,auth=HTTPDigestAuth(login, passw))
-                    softwareversion = requests.get(http + ip_uniview + str(ip_rest) + softwareversion_rest,auth=HTTPDigestAuth(login, passw))
-                    channeltitle = requests.get(http + ip_uniview + str(ip_rest) + channeltitle_rest,auth=HTTPDigestAuth(login, passw))
-                    devicetype = requests.get(http + ip_uniview + str(ip_rest) + devicetype_rest,auth=HTTPDigestAuth(login, passw))
-                    if systeminfo.status_code == 200:
+            if (response.is_reached()): #jeśli połączenie nawiązane
+                systeminfo = requests.get(http + ip_uniview + str(ip_rest) + uniview_url, auth=HTTPDigestAuth(login, passw))
+                cloud = requests.get(http + ip_uniview + str(ip_rest) + cloud_rest, auth=HTTPDigestAuth(login, passw))
+                confignetwork = requests.get(http + ip_uniview + str(ip_rest) + confignetwork_rest, auth=HTTPDigestAuth(login, passw))
+                configencode = requests.get(http + ip_uniview + str(ip_rest) + configencode_rest, auth=HTTPDigestAuth(login, passw))
+                currenttime = requests.get(http + ip_uniview + str(ip_rest) + currenttime_rest,auth=HTTPDigestAuth(login, passw))
+                softwareversion = requests.get(http + ip_uniview + str(ip_rest) + softwareversion_rest,auth=HTTPDigestAuth(login, passw))
+                channeltitle = requests.get(http + ip_uniview + str(ip_rest) + channeltitle_rest,auth=HTTPDigestAuth(login, passw))
+                devicetype = requests.get(http + ip_uniview + str(ip_rest) + devicetype_rest,auth=HTTPDigestAuth(login, passw))
+                if systeminfo.status_code == 200: #jeśli mamy połączenie do rejestratora
+                    #print (systeminfo.headers)
+                    #print (systeminfo.cookies)
+                    #print(systeminfo.elapsed)
+                    #print(systeminfo.encoding)
+                    #print(systeminfo.history)
+                    print(systeminfo.content)
+                    print(systeminfo.apparent_encoding)
+                    print(systeminfo.links)
+                    print(systeminfo.iter_content(1,True))
+                    print(systeminfo.__attrs__)
+                    print(systeminfo.reason)
+                    print(systeminfo.raw)
+                    print(systeminfo.links)
+                    print(systeminfo.apparent_encoding)
+                    filepath = "Raport/NVR_" + ping_ip + ".txt"
+                    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+                    with open(filepath, 'w', encoding='utf-8') as f:
                         print("Rejestrator: " + ping_ip + "\n", file=f)
                         print("Data wygenerowania raportu: "+ datetime.today().strftime("%Y-%m-%d %H:%M:%S"), file=f)
                         print('Linki: \n' + str(systeminfo.url) + '\n' + str(cloud.url) + '\n' + str(confignetwork.url) + '\n' + str(configencode.url) + '\n' + str(currenttime.url) + '\n' + str(softwareversion.url) + '\n' + str(channeltitle.url) + '\n' + str(devicetype.url) + '\n', file=f)
@@ -224,16 +240,19 @@ def dahua_new_files():
                         print("Dane rejestratora zapisane")
                         #print(confignetwork.url)_
                         #print(confignetwork.status_code)
-                    if systeminfo.status_code == 401:
-                        systeminfo = requests.get(http + ip_uniview + str(ip_rest) + uniview_url,auth=(login, passw))
-                        cloud = requests.get(http + ip_uniview + str(ip_rest) + cloud_rest,auth=(login, passw))
-                        confignetwork = requests.get(http + ip_uniview + str(ip_rest) + confignetwork_rest,auth=(login, passw))
-                        configencode = requests.get(http + ip_uniview + str(ip_rest) + configencode_rest,auth=(login, passw))
-                        currenttime = requests.get(http + ip_uniview + str(ip_rest) + currenttime_rest,auth=(login, passw))
-                        softwareversion = requests.get(http + ip_uniview + str(ip_rest) + softwareversion_rest,auth=(login, passw))
-                        channeltitle = requests.get(http + ip_uniview + str(ip_rest) + channeltitle_rest,auth=(login, passw))
-                        devicetype = requests.get(http + ip_uniview + str(ip_rest) + devicetype_rest,auth=(login, passw))
-                        if systeminfo.status_code == 200:
+                elif systeminfo.status_code == 401: #jeśli nie połączymy się do rejestratora, próbujemy do IPC z auth=login,passw
+                    systeminfo = requests.get(http + ip_uniview + str(ip_rest) + uniview_url,auth=(login, passw))
+                    cloud = requests.get(http + ip_uniview + str(ip_rest) + cloud_rest,auth=(login, passw))
+                    confignetwork = requests.get(http + ip_uniview + str(ip_rest) + confignetwork_rest,auth=(login, passw))
+                    configencode = requests.get(http + ip_uniview + str(ip_rest) + configencode_rest,auth=(login, passw))
+                    currenttime = requests.get(http + ip_uniview + str(ip_rest) + currenttime_rest,auth=(login, passw))
+                    softwareversion = requests.get(http + ip_uniview + str(ip_rest) + softwareversion_rest,auth=(login, passw))
+                    channeltitle = requests.get(http + ip_uniview + str(ip_rest) + channeltitle_rest,auth=(login, passw))
+                    devicetype = requests.get(http + ip_uniview + str(ip_rest) + devicetype_rest,auth=(login, passw))
+                    if systeminfo.status_code == 200: #jeśli połączymy się do IPC
+                        filepath = "Raport/IPC_" + ping_ip + ".txt"
+                        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+                        with open(filepath, 'w', encoding='utf-8') as f:
                             print("Kamera: " + ping_ip + "\n", file=f)
                             print("Data wygenerowania raportu: " + datetime.now().strftime("%Y-%m-%d %H:%M:%S"),file=f)
                             print('Linki: \n' + str(systeminfo.url) + '\n' + str(cloud.url) + '\n' + str(confignetwork.url) + '\n' + str(configencode.url) + '\n' + str(currenttime.url) + '\n' + str(softwareversion.url) + '\n' + str(channeltitle.url) + '\n' + str(devicetype.url) + '\n', file=f)
@@ -246,28 +265,28 @@ def dahua_new_files():
                             print("Kodowanie: \n" + configencode.text, file=f)
                             print("Kanały: \n" + channeltitle.text, file=f)
                             print("Dane kamery zapisane")
-                        elif systeminfo.status_code == 401:
-                            filepathauth = "Raport/BLOKADA_" + ping_ip + ".txt"
-                            os.makedirs(os.path.dirname(filepathauth), exist_ok=True)
-                            with open(filepathauth, 'w', encoding='utf-8') as l:
-                                print("Zły login '"+login+"' lub hasło '" +passw+"' lub urządzenie zablokowane.", file=l)
-                                print("Zły login lub hasło lub urządzenie zablokowane")
+                    elif systeminfo.status_code == 401: #jeśli nie połączymy się do urzadzenia
+                        filepathauth = "Raport/BLOKADA_" + ping_ip + ".txt"
+                        os.makedirs(os.path.dirname(filepathauth), exist_ok=True)
+                        with open(filepathauth, 'w', encoding='utf-8') as l:
+                            print("Zły login '"+login+"' lub hasło '" +passw+"' lub urządzenie zablokowane.", file=l)
+                            print("Zły login lub hasło lub urządzenie zablokowane")
                     else:
-                        filepathproblem = "Raport/NIEZNANY_" + ping_ip + ".txt"
-                        os.makedirs(os.path.dirname(filepathproblem), exist_ok=True)
-                        with open(filepathproblem, 'w', encoding='utf-8') as p:
-                            print("Nieznany problem.", file=p)
-                            print("Nieznany problem")
-                            print(systeminfo.url)
-                            print(systeminfo.status_code)
+                        #filepathproblem = "Raport/NIEZNANY_" + ping_ip + ".txt"
+                        #os.makedirs(os.path.dirname(filepathproblem), exist_ok=True)
+                        #with open(filepathproblem, 'w', encoding='utf-8') as p:
+                        #print("Nieznany problem.", file=p)
+                        print("Nieznany problem")
+                        print(systeminfo.url)
+                        #print(systeminfo.status_code)
 
 
-                else:
-                    filepathoffline = "Raport/OFFLINE_"+ping_ip+".txt"
-                    os.makedirs(os.path.dirname(filepathoffline), exist_ok=True)
-                    with open(filepathoffline, 'w', encoding='utf-8') as o:
-                        print("OFFLINE\n", file=o)
-                        print("OFFLINE")
+            else:
+                filepathoffline = "Raport/OFFLINE_"+ping_ip+".txt"
+                os.makedirs(os.path.dirname(filepathoffline), exist_ok=True)
+                with open(filepathoffline, 'w', encoding='utf-8') as o:
+                    print("OFFLINE\n", file=o)
+                    print("OFFLINE")
         break
 
 
@@ -582,6 +601,7 @@ def uniview_new():
         channeldetailinfos_nvr_unv = "Channels/System/ChannelDetailInfos"
         containers_nvr_unv = "Storage/Containers"
         advanced_nvr_unv = "System/Advanced"
+        cloud_nvr_unv = "Network/Cloud"
         p = pings.Ping()
         for i in range(x, y):
             ip_rest = str(i)
@@ -616,6 +636,7 @@ def uniview_new():
                 channeldetailinfos_nvr_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + channeldetailinfos_nvr_unv, auth=HTTPDigestAuth(login, passw))
                 containers_nvr_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + containers_nvr_unv, auth=HTTPDigestAuth(login, passw))
                 advanced_nvr_unv_x=requests.get(http + ip_uniview + str(ip_rest) + str(static) + advanced_nvr_unv, auth=HTTPDigestAuth(login, passw))
+                cloud_nvr_unv_x = requests.get(http + ip_uniview + str(ip_rest) + str(static) + cloud_nvr_unv, auth=HTTPDigestAuth(login, passw))
                 #c = requests.get("192.168.135.50", auth=HTTPDigestAuth(login, passw))
                 print("DDNS: \n"+ ddns_both_unv_x.text)
                 print("SD: \n"+ sd_both_unv_x.text)
@@ -635,15 +656,38 @@ def uniview_new():
                 print("Osd: \n"+ osd_ipc_unv_x.text)
                 print("Info: \n"+ info_nvr_unv_x.text)
                 print("Currentsupport: \n"+ currentandsupport_nvr_unv_x.text)
-                print("Runtime nvr: \n"+ run_nvr_unv_x.text)
-                print("NTP: \n"+ ntp_nvr_unv_x.text)
-                print("Ports: \n"+ ports_nvr_unv_x.text)
-                print("Upnp: \n"+ upnp_nvr_unv_x.text)
-                print("Channeldetail: \n"+ channeldetailinfos_nvr_unv_x.text)
-                print("Containers: \n"+ containers_nvr_unv_x.text)
-                print("Advanced: \n"+ advanced_nvr_unv_x.text)
-                #print(systeminfo.url)
-                #print(systeminfo.status_code)
+                #print("Runtime nvr: \n"+ run_nvr_unv_x.text)
+                #print("NTP: \n"+ ntp_nvr_unv_x.text)
+                #print("Ports: \n"+ ports_nvr_unv_x.text)
+                #print("Upnp: \n"+ upnp_nvr_unv_x.text)
+                #print("Channeldetail: \n"+ channeldetailinfos_nvr_unv_x.text)
+                #print("Containers: \n"+ containers_nvr_unv_x.text)
+                #print("Advanced: \n"+ advanced_nvr_unv_x.text)
+                print("Cloud: \n" + cloud_nvr_unv_x.text)
+                print(cloud_nvr_unv_x.url)
+                print(cloud_nvr_unv_x.request)
+                #print(cloud_nvr_unv_x.content)
+                #print(cloud_nvr_unv_x.reason)
+                #print(cloud_nvr_unv_x.headers)
+                #print(cloud_nvr_unv_x.cookies)
+                #print(cloud_nvr_unv_x.raw)
+
+                data = {"Enabled": 1,
+                        "Domain": "p2pdevice.bcscctv.pl",
+                        "DeviceName": "UNIVIEW"}
+
+                g = requests.get(cloud_nvr_unv_x.url, auth=HTTPDigestAuth(login, passw))
+                print (g.status_code)
+                #print (g.text)
+                r = requests.put(cloud_nvr_unv_x.url, auth=HTTPDigestAuth(login, passw), json=data)
+                print(r.status_code)
+                print(r.text)
+                #print(r.headers)
+                print("Cloud: \n" + cloud_nvr_unv_x.text)
+                print(r.url)
+                print(cloud_nvr_unv_x.url)
+                print(cloud_nvr_unv_x.request)
+                print(requests.post)
             else:
                 print("OFFLINE\n")
         break

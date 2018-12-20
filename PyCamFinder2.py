@@ -92,8 +92,7 @@ def menu():
         choice = input("""
                     0: Kompletny raport - podgląd
                     1: Kompletny raport - file
-                    2: Ustawienie chmury - nowy soft
-                    3: Ustawienie chmury - stary soft
+                    2: Ustawienie chmury
 
                     9: Powrót do menu
                     0: Wyjście
@@ -105,11 +104,11 @@ def menu():
         if choice == '1':
             set_unv_cloud()
         elif choice == '2':
-            set_unv_cloud_first()
+            set_unv_cloud()
         elif choice == '3':
-            set_unv_cloud_second()
+            menu()
         elif choice == '4':
-            set_unv_cloud3()
+            menu()
         elif choice == '0':
             sys.exit()
         else:
@@ -691,7 +690,7 @@ def set_unv_cloud_first():
 
 
 
-def set_unv_cloud_second():
+def set_unv_cloud():
     while True:
         try:
             a = int(input("Podsieć: 192.168."))
@@ -712,86 +711,89 @@ def set_unv_cloud_second():
         #passw_text = ("Podaj hasło: ")
         #passw = input(passw_text)
 
-
-
         http = "http://"
         ip_uniview = "192.168." + str(a) + "."
         static = "/LAPI/V1.0/"
         static2 = "/cgi-bin/main-cgi/"
+        cloud_nvr_unv = "Network/Cloud"
         p = pings.Ping()
         for i in range(x, y):
             ip_rest = str(i)
             ping_ip = str(ip_uniview + ip_rest)
             response = p.ping(ping_ip)
             print(ping_ip)
-            # response = p.ping("192.168.135.50"))
+
             # print (response)
             if (response.is_reached()):
                 info_nvr_unv = "System/DeviceInfo"
                 info_nvr_unv_x = requests.get(http + ip_uniview + str(ip_rest) + str(static) + info_nvr_unv,auth=HTTPDigestAuth(login_ac, passw_ac))
                 #infox = json.decoder(info_nvr_unv_x)
                 #print(info_nvr_unv_x.text
-                x = str(json.loads(info_nvr_unv_x.text))
+                x = json.loads(info_nvr_unv_x.text)
+                #print(x)
+                firmwareversion = (x['Response']['Data']['FirmwareVersion'])
+                firmsubstr = int(firmwareversion[3:5])
+                fw = "D"+str(firmsubstr)
+                print("Wersja firmware: " +fw)
+                if(firmsubstr>22):
+                    cloud_nvr_unv_x = requests.get(http + ip_uniview + str(ip_rest) + str(static) + cloud_nvr_unv,auth=HTTPDigestAuth(login, passw))
+                    cloudname = WordCompleter(['p2pdevice.bcscctv.pl', 'p2p.bcscctv.pl', 'test', 'nic'])
+                    prompt('Podaj adres chmury lub wybierz z listy: ', completer=cloudname)
+                    cloudname = str(cloudname)
+                    cloudstatus = int(input("Czy włączamy chmurę? 0 - NIE, 1 - TAK: "))
+                    data = {"Enabled": cloudstatus,
+                            "Domain": "" + cloudname + "",
+                            "DeviceName": "UNIVIEW"}
 
-                #pac = x['Data']['SerialNumber']
-                #print(pac)
-
-
-                print(x)
-                #print("Info: \n" + info_nvr_unv_x.text)
-                #cloud_nvr_unv_x = requests.get(http + ip_uniview + str(ip_rest) + str(static) + cloud_nvr_unv,auth=HTTPDigestAuth(login_ac, passw_ac))
-                #cloud_nvr_unv_y = requests.get(http + ip_uniview + str(ip_rest) + str(static2), auth=(login_ac, passw_ac))
-
-                data2 = {"Enabled": 1,
-                         "Domain": "bcs.pl",
-                         "DeviceName": "UNIVIEW"}
-
-                cloudname = WordCompleter(['p2pdevice.bcscctv.pl', 'p2p.bcscctv.pl', 'test', 'nic'])
-                prompt('Podaj adres chmury lub wybierz z listy: ', completer=cloudname)
-                cloudname = str(cloudname)
-                #print('You said: %s' % text)
-
-                #cloudname = str(input("Podaj adres chmury np. p2pdevice.bcscctv.pl: "))
-                cloudstatus = str(input("Czy włączamy chmurę? 0 - NIE, 1 - TAK: "))
-
-            # hashowanie hasła do MD5
-                passwencode = str(passw_ac).encode('utf-8')
-                md5pass = (hashlib.md5(passwencode).hexdigest())
-                #print(md5pass)
-
-                datamd5 = {
-                    'szUserName': str(login_ac),
-                    'szUserLoginCert': md5pass
-                }
-
-
-            # zapis do pliku JSON z logowania
-
-                responsemd5 = requests.post(http + ping_ip + static2, data=datamd5)
-                #print(responsemd5)
-                filepath = "LOGIN/JSON_" + ping_ip + ".html"
-                os.makedirs(os.path.dirname(filepath), exist_ok=True)
-                with open(filepath, 'w', encoding='utf-8') as j:
-                    JSON = re.compile('GLOBAL_INFO = ({.*?});', re.DOTALL)
-                    matches = JSON.search(responsemd5.text)
-                    completejson = matches.group(1)
-                    #print(completejson)
-                    jsonx = json.loads(completejson)
-                    session_handler = jsonx['stUserInfo']['u32UserLoginHandle']
-                    string_session_handler = str(session_handler)
-                    #print(responsemd5.url)
-                    #print(responsemd5)
-
-
-                    data = '{"cmd":149,"bIsEnable":'+cloudstatus+',"u8DdnsType":"0","szDdnsDomain":"'+cloudname+'","szDeviceName":"","szDdnsUserName":"","szDdnsPassword":"","szUserName":"admin","u32UserLoginHandle":'+string_session_handler+'}'
-
-                    response = requests.post(responsemd5.url, data=data)
-                    #print(response.text)
-                    if (response.status_code != 200):
-                        print("Wystąpił nieznany problem, chmura nieustawiona. Kod błędu: " + r.status_code)
+                    r = requests.put(cloud_nvr_unv_x.url, auth=HTTPDigestAuth(login, passw), json=data)
+                    if (r.status_code != 200):
+                        print("Wystąpił nieznany problem, chmura niustawiona. Kod błędu: " + r.status_code)
                     else:
-                        print("Adres chmury został zmieniony a status ustawiono na " + str(cloudstatus))
-                    #print(responsex.text)
+                        print("Adres chmury zmieniony a status chmury ustawiony na " + str(cloudstatus))
+                else:
+
+                    cloudname = WordCompleter(['p2pdevice.bcscctv.pl', 'p2p.bcscctv.pl', 'test', 'nic'])
+                    prompt('Podaj adres chmury lub wybierz z listy: ', completer=cloudname)
+                    cloudname = str(cloudname)
+                    cloudstatus = str(input("Czy włączamy chmurę? 0 - NIE, 1 - TAK: "))
+
+                # hashowanie hasła do MD5
+                    passwencode = str(passw_ac).encode('utf-8')
+                    md5pass = (hashlib.md5(passwencode).hexdigest())
+                    #print(md5pass)
+
+                    datamd5 = {
+                        'szUserName': str(login_ac),
+                        'szUserLoginCert': md5pass
+                    }
+
+                # zapis do pliku JSON z logowania
+
+                    responsemd5 = requests.post(http + ping_ip + static2, data=datamd5)
+                    #print(responsemd5)
+                    filepath = "LOGIN/JSON_" + ping_ip + ".html"
+                    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+                    with open(filepath, 'w', encoding='utf-8') as j:
+                        JSON = re.compile('GLOBAL_INFO = ({.*?});', re.DOTALL)
+                        matches = JSON.search(responsemd5.text)
+                        completejson = matches.group(1)
+                        #print(completejson)
+                        jsonx = json.loads(completejson)
+                        session_handler = jsonx['stUserInfo']['u32UserLoginHandle']
+                        string_session_handler = str(session_handler)
+                        #print(responsemd5.url)
+                        #print(responsemd5)
+
+
+                        data = '{"cmd":149,"bIsEnable":'+cloudstatus+',"u8DdnsType":"0","szDdnsDomain":"'+cloudname+'","szDeviceName":"","szDdnsUserName":"","szDdnsPassword":"","szUserName":"admin","u32UserLoginHandle":'+string_session_handler+'}'
+
+                        response = requests.post(responsemd5.url, data=data)
+                        #print(response.text)
+                        if (response.status_code != 200):
+                            print("Wystąpił nieznany problem, chmura nieustawiona. Kod błędu: " + r.status_code)
+                        else:
+                            print("Adres chmury został zmieniony a status ustawiono na " + str(cloudstatus))
+                        #print(responsex.text)
         break
 
 

@@ -6,8 +6,8 @@ date = datetime.datetime.now()
 date_short = date.strftime("%d%m%y")
 
 source_path = input("Wprowadź ścieżkę do źródła np.: /home/user/Pulpit\n")
-destination_path = input("Wprowadź ścieżkę przeznaczenia np.: /media/disk/\n")
-destination_filename = "backup"+date_short
+destination_path = input("Wprowadź ścieżkę przeznaczenia np.: /media/disk\n")
+destination_filename = "/backup"+date_short
 
 dest = destination_path + destination_filename
 

@@ -22,8 +22,10 @@ elif check_dir == True:
     if os.path.exists(dest):
         for i in range(check_dir):
             print("Katalog o tej nazwie już istnieje.")
+            print("Kopiowanie rozpoczęte...")
             destination_filename = "backup"+date_short+"_"+str(i)
             dest = destination_path + destination_filename
+            print("Kopiowanie zakończone. \n Plik backupu jest tutaj: "+dest)
             if os.path.exists(dest):
                 print("Ten plik już istnieje tutaj: "+dest)
             else:
